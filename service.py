@@ -3,6 +3,25 @@
 __author__ = 'Jeremy Rabasco'
 
 import pickle
+from Crypto.Cipher import AES
+import os
+
+BLOCK_SIZE = 32
+PADDING = b'{'
+
+# one-liner to sufficiently pad the text to be encrypted
+pad = lambda s: s + (BLOCK_SIZE - len(s) % BLOCK_SIZE) * PADDING
+
+# one-liners to encrypt/encode and decrypt/decode a string
+# encrypt with AES, encode with base64
+EncodeAES = lambda c, s: c.encrypt(pad(s))
+DecodeAES = lambda c, e: c.decrypt(e).rstrip(PADDING)
+
+# generate a random secret key
+secret = b'1111111 1111111 1111111 1111111 '
+
+# create a cipher object using the random secret
+cipher = AES.new(secret)
 
 class Service:
 
@@ -39,17 +58,16 @@ class Service:
         if file == "":
             file = self.service_name
         with open(file, "wb+") as out_file:
-            pickle.dump(self, out_file)
+            out_file.write(EncodeAES(cipher, pickle.dumps(self)))
 
-    def read(self, file: str) :
+    def read(self, file: str):
         with open(file, "rb") as in_file:
-            tmp = pickle.load(in_file)
+            tmp = pickle.loads(DecodeAES(cipher, in_file.read()))
             self.service_name = tmp.service_name
             self.username = tmp.username
             self.password = tmp.password
 
 if __name__ == "__main__":
-    import os
     ref_service = Service()
     print("Creation of service with no argument :", end="")
     service1 = Service()

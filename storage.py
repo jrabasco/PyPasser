@@ -4,6 +4,7 @@ import pickle
 from Crypto.Cipher import AES
 import os
 import hashlib
+from storable import Storable
 
 
 class Storage:
@@ -30,10 +31,12 @@ class Storage:
 
     @staticmethod
     def generate_aes(secret: str) -> AES:
-        key = hashlib.sha256(secret.encode())
+        sha = hashlib.sha256()
+        sha.update(secret.encode())
+        key = sha.digest()
         return AES.new(key)
 
-    def read(self, file: str, to_fill, secret: str):
+    def read(self, file: str, to_fill: Storable, secret: str):
         with open(file, "rb") as in_file:
             aes = self.generate_aes(secret)
             tmp = pickle.loads(self.__decode(aes, in_file.read()))

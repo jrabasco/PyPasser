@@ -1,7 +1,9 @@
 __author__ = 'Jeremy Rabasco'
 
+import storable
 
-class Service:
+
+class Service(storable.Storable):
 
     def __init__(self, service_name: str="ServiceName", username: str="Username", password: str="Password"):
         self.__service_name = service_name
@@ -32,7 +34,7 @@ class Service:
     def password(self, password: str):
         self.__password = password
 
-    def load(self, data :dict):
+    def load(self, data: dict):
         self.service_name = data["service_name"]
         self.username = data["username"]
         self.password = data["password"]

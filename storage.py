@@ -6,13 +6,6 @@ import os
 import hashlib
 
 
-def generate_aes(secret: str) -> AES:
-    sha = hashlib.sha256()
-    sha.update(secret.encode())
-    key = sha.digest()
-    return AES.new(key)
-
-
 class Storage:
 
     __BLOCK_SIZE = 32
@@ -32,12 +25,17 @@ class Storage:
         if dirs != "":
             os.makedirs(dirs, exist_ok=True)
         with open(path, "wb+") as out_file:
-            aes = generate_aes(secret)
+            aes = self.generate_aes(secret)
             out_file.write(self.__encode(aes, pickle.dumps(obj)))
+
+    @staticmethod
+    def generate_aes(secret: str) -> AES:
+        key = hashlib.sha256(secret.encode())
+        return AES.new(key)
 
     def read(self, file: str, to_fill, secret: str):
         with open(file, "rb") as in_file:
-            aes = generate_aes(secret)
+            aes = self.generate_aes(secret)
             tmp = pickle.loads(self.__decode(aes, in_file.read()))
             data = {}
             for attr in dir(to_fill):

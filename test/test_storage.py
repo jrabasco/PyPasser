@@ -7,6 +7,7 @@ import unittest
 import storage
 from service import Service
 
+
 class TestStorage(unittest.TestCase):
 
     def setUp(self):

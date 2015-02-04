@@ -2,26 +2,6 @@
 
 __author__ = 'Jeremy Rabasco'
 
-import pickle
-from Crypto.Cipher import AES
-import os
-
-BLOCK_SIZE = 32
-PADDING = b'{'
-
-# one-liner to sufficiently pad the text to be encrypted
-pad = lambda s: s + (BLOCK_SIZE - len(s) % BLOCK_SIZE) * PADDING
-
-# one-liners to encrypt/encode and decrypt/decode a string
-# encrypt with AES, encode with base64
-EncodeAES = lambda c, s: c.encrypt(pad(s))
-DecodeAES = lambda c, e: c.decrypt(e).rstrip(PADDING)
-
-# generate a random secret key
-secret = b'1111111 1111111 1111111 1111111 '
-
-# create a cipher object using the random secret
-cipher = AES.new(secret)
 
 class Service:
 
@@ -54,18 +34,10 @@ class Service:
     def password(self, password: str):
         self.__password = password
 
-    def write(self, file: str=""):
-        if file == "":
-            file = self.service_name
-        with open(file, "wb+") as out_file:
-            out_file.write(EncodeAES(cipher, pickle.dumps(self)))
-
-    def read(self, file: str):
-        with open(file, "rb") as in_file:
-            tmp = pickle.loads(DecodeAES(cipher, in_file.read()))
-            self.service_name = tmp.service_name
-            self.username = tmp.username
-            self.password = tmp.password
+    def load(self, data :dict):
+        self.service_name = data["service_name"]
+        self.username = data["username"]
+        self.password = data["password"]
 
 if __name__ == "__main__":
     ref_service = Service()
@@ -91,18 +63,4 @@ if __name__ == "__main__":
     assert service1.service_name == "ser"
     assert service1.username == "use"
     assert service1.password == "pas"
-    print(" OK")
-
-    print("Writing to file and retrieving :", end="")
-    service1 = Service()
-    service1.service_name = "ser"
-    service1.username = "use"
-    service1.password = "pas"
-    service1.write("test")
-    service2 = Service()
-    service2.read("test")
-    assert service1.service_name == service2.service_name
-    assert service1.username == service2.username
-    assert service1.password == service2.password
-    os.remove(os.getcwd()+"/test")
     print(" OK")

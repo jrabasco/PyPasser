@@ -1,4 +1,3 @@
-#!/bin/python3.4
 __author__ = 'Jeremy Rabasco'
 
 import pickle

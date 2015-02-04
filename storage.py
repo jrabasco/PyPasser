@@ -7,10 +7,10 @@ import hashlib
 
 
 def generate_aes(secret: str) -> AES:
-        hash = hashlib.sha256()
-        hash.update(secret.encode())
-        key = hash.digest()
-        return AES.new(key)
+    sha = hashlib.sha256()
+    sha.update(secret.encode())
+    key = sha.digest()
+    return AES.new(key)
 
 
 class Storage:
@@ -43,20 +43,3 @@ class Storage:
             for attr in dir(to_fill):
                 data[attr] = getattr(tmp, attr)
             to_fill.load(data)
-
-if __name__ == "__main__":
-    from service import Service
-    print("Writing custom service and re-reading it...", end="")
-    service = Service()
-    service.service_name = "Hello"
-    service.username = "This"
-    service.password = "Works"
-    storage = Storage()
-    storage.write("test", service, "test.serv")
-    service2 = Service()
-    storage.read("test.serv", service2, "test")
-    assert service2.service_name == service.service_name
-    assert service2.username == service.username
-    assert service2.password == service.password
-    os.remove(os.getcwd() + "/test.serv")
-    print(" OK")

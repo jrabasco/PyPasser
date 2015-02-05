@@ -33,5 +33,20 @@ class ServiceTest(unittest.TestCase):
         self.assertEqual(service1.username, "use")
         self.assertEqual(service1.password, "pas")
 
+    def test_load(self):
+        serv = service.Service()
+        serv.service_name = "Is"
+        serv.username = "This"
+        serv.password = "Working ?"
+        serv2 = service.Service()
+        dic = {}
+        dic["service_name"] = serv.service_name
+        dic["username"] = serv.username
+        dic["password"] = serv.password
+        serv2.load(dic)
+        self.assertEqual(serv.service_name, serv2.service_name)
+        self.assertEqual(serv.username, serv2.username)
+        self.assertEqual(serv.password, serv2.password)
+
 if __name__ == "__main__":
     unittest.main()

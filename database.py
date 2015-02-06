@@ -27,13 +27,3 @@ class Database(storable.Storable):
     def load(self, data: dict):
         self.__name = data["name"]
         self.__services = data["services"][:]
-
-    def display(self):
-        print("Database", self.__name)
-        print("Contains", len(self.__services), "service" + ("s." if len(self.__services) > 1 else '.'))
-        for serv in self.__services:
-            print()
-            print('\t' + serv.service_name)
-            print("\tUsername :", serv.username)
-            print("\tPassword :", serv.password)
-        print()

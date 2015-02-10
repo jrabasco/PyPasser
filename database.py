@@ -24,6 +24,9 @@ class Database(storable.Storable):
     def add_service(self, new_service: Service):
         self.__services.append(new_service)
 
+    def remove_service(self, index: int):
+        self.__services.remove(index)
+
     def load(self, data: dict):
         self.__name = data["name"]
         self.__services = data["services"][:]

@@ -1,5 +1,5 @@
 #!/usr/bin/python3.4
-
+#This file has a lot of dependencies from the console application, this should be reworked
 __author__ = 'Jeremy Rabasco'
 
 from tkinter import *

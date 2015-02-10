@@ -47,3 +47,7 @@ def read(secret: str, obj: Storable, path: str):
         for attr in dir(obj):
             data[attr] = getattr(tmp, attr)
         obj.load(data)
+
+
+def delete(path: str):
+    os.remove(os.getcwd() + '/' + path)

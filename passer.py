@@ -173,11 +173,5 @@ if __name__ == "__main__":
                 sys.exit(0)
             display_db(db)
             perform_actions(db, password)
-    except Exception:
-        logging.exception("FATAL")
+    finally:
         clean_dbs()
-        sys.exit(9000)
-    except KeyboardInterrupt:
-        print('\nInterrupted.')
-        clean_dbs()
-        sys.exit(9000)

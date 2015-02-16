@@ -192,10 +192,21 @@ def perform_actions(db: database.Database, password: str):
 
 def login_prompt() -> (database.Database, str):
     global buff_size
-    db_name = get_input("Database: ")
-    db_pass = getpass.getpass()
-    buff_size += 1
-    return login(db_name, db_pass), db_pass
+    db = None
+    pass_ok = False
+    while not pass_ok:
+        try:
+            db_name = get_input("Database: ")
+            db_pass = getpass.getpass()
+            buff_size += 1
+            db = login(db_name, db_pass)
+            pass_ok = True
+        except pickle.UnpicklingError:
+            clear()
+            print("Invalid database name/password combination, try again.")
+            buff_size += 1
+            pass_ok = False
+    return db, db_pass
 
 if __name__ == "__main__":
     try:

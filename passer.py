@@ -8,13 +8,28 @@ import storage
 import database
 import service
 import getpass
-import logging
 import tkinter
+import pickle
+
+buff_size = 0
+
+
+def clear():
+    global buff_size
+    CURSOR_UP_ONE = '\x1b[1A'
+    ERASE_LINE = '\x1b[2K'
+    print((buff_size + 1)*CURSOR_UP_ONE)
+    for i in range(buff_size):
+        print(ERASE_LINE)
+    print((buff_size + 1)*CURSOR_UP_ONE)
+    buff_size = 0
 
 
 def query_yes_no(question: str) -> bool:
+    global buff_size
     valid = {"yes": True, "y": True, "ye": True, "no": False, "n": False}
     print(question + " [Y/n] ", end='')
+    buff_size += 1
     choice = input().lower()
     if choice in valid:
         return valid[choice]
@@ -23,22 +38,28 @@ def query_yes_no(question: str) -> bool:
 
 
 def get_service_data() -> dict:
+    global buff_size
     print("Enter the new service data:")
+    buff_size += 1
     service_name = get_input("Service name: ")
     username = get_input("Username: ")
     password = getpass.getpass()
+    buff_size += 1
     return {"service_name": service_name, "username": username, "password": password}
 
 
 def display_db(db: database.Database):
+    global buff_size
+    clear()
     print("Database", db.name)
     print("Contains", len(db.services), "service" + ("s." if len(db.services) > 1 else '.'))
+    buff_size += 2
 
     for i in range(len(db.services)):
         print('\t' + str(i+1) + ". " + db.services[i].service_name)
         print("\tUsername :", db.services[i].username)
-        #print("\tPassword :", db.services[i].password)
         print()
+        buff_size += 3
 
 
 def login(name: str, password: str) -> database.Database:
@@ -71,11 +92,14 @@ def create_service():
 
 
 def get_input(msg: str):
+    global buff_size
     print(msg, end='')
+    buff_size += 1
     return input()
 
 
 def get_input_with_choices(msg: str, choices: list):
+    global buff_size
     done = False
     while not done:
         choice = get_input(msg)
@@ -84,6 +108,7 @@ def get_input_with_choices(msg: str, choices: list):
         else:
             expected = ','.join(choices)
             print("Not an expected value, expected : " + expected)
+            buff_size += 1
     return choice
 
 
@@ -97,12 +122,14 @@ def clean_dbs():
 
 
 def perform_actions(db: database.Database, password: str):
+    global buff_size
     cont = True
     while cont:
         services_number = len(db.services)
         choice = get_input_with_choices("What do you want to do ? quit (q), edit database (e), load new db (l), "
                                         "get password (g): ", ['q', 'e', 'l', 'g'])
         if choice == 'q':
+            clear()
             sys.exit(0)
         elif choice == 'e':
             choice = get_input_with_choices("Edit service (e), remove service (r), add service (a), delete db (d), "
@@ -119,6 +146,7 @@ def perform_actions(db: database.Database, password: str):
                     display_db(db)
                 else:
                     print("No service available.")
+                    buff_size += 1
             elif choice == 'r':
                 if services_number > 0:
                     choices = [str(c) for c in range(1, services_number + 1)]
@@ -129,6 +157,7 @@ def perform_actions(db: database.Database, password: str):
                     display_db(db)
                 else:
                     print("No service available.")
+                    buff_size += 1
             elif choice == 'a':
                 data = get_service_data()
                 serv = service.Service()
@@ -158,11 +187,14 @@ def perform_actions(db: database.Database, password: str):
                 r.clipboard_append(db.services[int(choice)-1].password)
             else:
                 print("No service available.")
+                buff_size += 1
 
 
 def login_prompt() -> (database.Database, str):
+    global buff_size
     db_name = get_input("Database: ")
     db_pass = getpass.getpass()
+    buff_size += 1
     return login(db_name, db_pass), db_pass
 
 if __name__ == "__main__":

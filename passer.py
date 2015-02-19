@@ -43,8 +43,7 @@ def get_service_data() -> dict:
     buff_size += 1
     service_name = get_input("Service name: ")
     username = get_input("Username: ")
-    password = getpass.getpass()
-    buff_size += 1
+    password = get_password()
     return {"service_name": service_name, "username": username, "password": password}
 
 
@@ -91,11 +90,16 @@ def create_service():
     return serv
 
 
+def get_password():
+    global buff_size
+    buff_size += 1
+    return getpass.getpass()
+
+
 def get_input(msg: str):
     global buff_size
-    print(msg, end='')
     buff_size += 1
-    return input()
+    return input(msg)
 
 
 def get_input_with_choices(msg: str, choices: list):
@@ -132,8 +136,9 @@ def perform_actions(db: database.Database, password: str):
             clear()
             sys.exit(0)
         elif choice == 'e':
-            choice = get_input_with_choices("Edit service (e), remove service (r), add service (a), delete db (d), "
-                                            "cancel (c): ", ['e', 'r', 'a', 'd', 'c']).lower()
+            choice = get_input_with_choices("Edit service (e), remove service (r), add service (a), change login "
+                                            "information (l), delete db (d), "
+                                            "cancel (c): ", ['e', 'r', 'a', 'd', 'c', 'l'])
             if choice == 'e':
                 if services_number > 0:
                     choices = [str(c) for c in range(1, services_number + 1)]
@@ -171,10 +176,31 @@ def perform_actions(db: database.Database, password: str):
                     cont = False
                     if query_yes_no("Quit ?"):
                         sys.exit(0)
+            elif choice == 'l':
+                choice = get_input_with_choices("Change name (n), password (p), both (b), cancel (c): ",
+                                                ['n', 'p', 'b', 'c'])
+                name = None
+                pword = None
+
+                if choice == 'n':
+                    name = get_input("Name: ")
+                elif choice == 'p':
+                    pword = get_password()
+                elif choice == 'b':
+                    name = get_input("Name: ")
+                    pword = get_password()
+
+                if name is not None or pword is not None:
+                    storage.delete("databases/" + db.name + ".db")
+                    db.name = name if name is not None else db.name
+                    pword = pword if pword is not None else password
+                    storage.write(pword, db, "databases/" + db.name + ".db")
+                    display_db(db)
 
         elif choice == 'l':
             del db
             cont = False
+            clear()
         elif choice == 'g':
             if services_number > 0:
                 choices = [str(c) for c in range(1, services_number + 1)]
@@ -196,8 +222,7 @@ def login_prompt() -> (database.Database, str):
     while not pass_ok:
         try:
             db_name = get_input("Database: ")
-            db_pass = getpass.getpass()
-            buff_size += 1
+            db_pass = get_password()
             db = login(db_name, db_pass)
             pass_ok = True
         except pickle.UnpicklingError:

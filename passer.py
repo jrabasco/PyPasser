@@ -16,12 +16,12 @@ buff_size = 0
 
 def clear():
     global buff_size
-    CURSOR_UP_ONE = '\x1b[1A'
-    ERASE_LINE = '\x1b[2K'
-    print((buff_size + 1)*CURSOR_UP_ONE)
+    cursor_up_one = '\x1b[1A'
+    erase_line = '\x1b[2K'
+    print((buff_size + 1)*cursor_up_one)
     for i in range(buff_size):
-        print(ERASE_LINE)
-    print((buff_size + 1)*CURSOR_UP_ONE)
+        print(erase_line)
+    print((buff_size + 1)*cursor_up_one)
     buff_size = 0
 
 
@@ -133,9 +133,8 @@ def perform_actions(db: database.Database, password: str):
             sys.exit(0)
         elif choice == 'e':
             choice = get_input_with_choices("Edit service (e), remove service (r), add service (a), delete db (d), "
-                                            "cancel (c): ", ['e', 'r', 'a', 'd', 'c'
-            ]).lower()
-            if choice == 'e' :
+                                            "cancel (c): ", ['e', 'r', 'a', 'd', 'c']).lower()
+            if choice == 'e':
                 if services_number > 0:
                     choices = [str(c) for c in range(1, services_number + 1)]
                     choice = get_input_with_choices("Which one (1-" + str(services_number)+"): ",
@@ -218,3 +217,7 @@ if __name__ == "__main__":
             perform_actions(db, password)
     finally:
         clean_dbs()
+        try:
+            del db
+        except NameError:
+            pass

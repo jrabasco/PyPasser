@@ -241,6 +241,9 @@ if __name__ == "__main__":
                 sys.exit(0)
             display_db(db)
             perform_actions(db, password)
+    except KeyboardInterrupt:
+        print("\nReceived KeyboardInterrupt.")
+        pass
     finally:
         clean_dbs()
         try:

@@ -4,7 +4,7 @@ import pickle
 from Crypto.Cipher import AES
 import os
 import hashlib
-from storable import Storable
+from modules.storable import Storable
 
 
 __BLOCK_SIZE = 32

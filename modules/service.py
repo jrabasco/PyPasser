@@ -1,6 +1,6 @@
 __author__ = 'Jeremy Rabasco'
 
-import storable
+from modules import storable
 
 
 class Service(storable.Storable):

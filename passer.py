@@ -4,9 +4,9 @@ __author__ = 'Jeremy Rabasco'
 
 import os
 import sys
-import storage
-import database
-import service
+from modules import storage
+from modules import database
+from modules import service
 import getpass
 import tkinter
 import pickle

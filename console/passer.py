@@ -4,6 +4,7 @@ __author__ = 'Jeremy Rabasco'
 
 import os
 import sys
+sys.path.append("..")
 from modules import storage
 from modules import database
 from modules import service

@@ -4,7 +4,7 @@ __author__ = 'Jeremy Rabasco'
 import sys
 sys.path.append("..")
 import unittest
-import service
+from modules import service
 
 
 class ServiceTest(unittest.TestCase):
@@ -34,19 +34,20 @@ class ServiceTest(unittest.TestCase):
         self.assertEqual(service1.password, "pas")
 
     def test_load(self):
-        serv = service.Service()
-        serv.service_name = "Is"
-        serv.username = "This"
-        serv.password = "Working ?"
-        serv2 = service.Service()
-        dic = {}
-        dic["service_name"] = serv.service_name
-        dic["username"] = serv.username
-        dic["password"] = serv.password
-        serv2.load(dic)
-        self.assertEqual(serv.service_name, serv2.service_name)
-        self.assertEqual(serv.username, serv2.username)
-        self.assertEqual(serv.password, serv2.password)
+        test_service = service.Service()
+        test_service.service_name = "Is"
+        test_service.username = "This"
+        test_service.password = "Working ?"
+        test_service2 = service.Service()
+        dic = {
+            "service_name": test_service.service_name,
+            "username": test_service.username,
+            "password": test_service.password
+        }
+        test_service2.load(dic)
+        self.assertEqual(test_service.service_name, test_service2.service_name)
+        self.assertEqual(test_service.username, test_service2.username)
+        self.assertEqual(test_service.password, test_service2.password)
 
 if __name__ == "__main__":
     unittest.main()

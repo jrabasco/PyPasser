@@ -4,8 +4,8 @@ __author__ = 'Jeremy Rabasco'
 import sys
 sys.path.append("..")
 import unittest
-import database
-import service
+from modules import database
+from modules import service
 
 
 class TestDatabase(unittest.TestCase):
@@ -19,18 +19,19 @@ class TestDatabase(unittest.TestCase):
         self.assertEqual(db.name, "Custom")
 
     def test_add_service(self):
-        serv = service.Service()
+        test_service = service.Service()
         db = database.Database()
-        db.add_service(serv)
-        self.assertEqual(serv.service_name, db.services[0].service_name)
-        self.assertEqual(serv.username, db.services[0].username)
-        self.assertEqual(serv.password, db.services[0].password)
+        db.add_service(test_service)
+        self.assertEqual(test_service.service_name, db.services[0].service_name)
+        self.assertEqual(test_service.username, db.services[0].username)
+        self.assertEqual(test_service.password, db.services[0].password)
 
     def test_load(self):
         db = database.Database()
-        dic = {}
-        dic["name"] = "Hey"
-        dic["services"] = [service.Service()]
+        dic = {
+            "name": "Hey",
+            "services": [service.Service()]
+        }
         db.load(dic)
         self.assertEqual("Hey", db.name)
         self.assertEqual("ServiceName", db.services[0].service_name)

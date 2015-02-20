@@ -1,12 +1,13 @@
 #!/usr/bin/python3.4
 __author__ = "Jeremy Rabasco"
 
-import sys,os
+import sys
+import os
 sys.path.append("..")
 import unittest
-import storage
-from service import Service
-from database import Database
+from modules import storage
+from modules.service import Service
+from modules.database import Database
 
 
 class TestStorage(unittest.TestCase):
@@ -14,7 +15,7 @@ class TestStorage(unittest.TestCase):
     def setUp(self):
         self.service = Service()
         self.database = Database()
-        open("test.serv", "w+").close()
+        open("test.service", "w+").close()
         open("test.db", "w+").close()
 
     def test_write_read_service(self):
@@ -22,9 +23,9 @@ class TestStorage(unittest.TestCase):
         self.service.username = "This"
         self.service.password = "Works"
 
-        storage.write("test", self.service, "test.serv")
+        storage.write("test", self.service, "test.service")
         service2 = Service()
-        storage.read("test", service2, "test.serv")
+        storage.read("test", service2, "test.service")
         self.assertEqual(service2.service_name, self.service.service_name)
         self.assertEqual(service2.username, self.service.username)
         self.assertEqual(service2.password, self.service.password)
@@ -44,7 +45,7 @@ class TestStorage(unittest.TestCase):
             self.assertEqual(database2.services[i].password, self.database.services[i].password)
 
     def tearDown(self):
-        os.remove(os.getcwd() + "/test.serv")
+        os.remove(os.getcwd() + "/test.service")
         os.remove(os.getcwd() + "/test.db")
 
 if __name__ == "__main__":

@@ -58,3 +58,4 @@ target/
 
 # Local generated files
 console/databases/*
+server/databases/*

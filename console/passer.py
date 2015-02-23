@@ -193,6 +193,7 @@ def perform_actions(db: database.Database, password: str):
             del db
             cont = False
             clear()
+            return True
         elif choice == 'g':
             if services_number > 0:
                 choices = [str(c) for c in range(1, services_number + 1)]
@@ -205,6 +206,7 @@ def perform_actions(db: database.Database, password: str):
             else:
                 print("No service available.")
                 buff_size += 1
+    return False
 
 
 def open_db(db_name: str, db_pass: str) -> (database.Database, str):
@@ -241,14 +243,38 @@ def handle_login() -> (database.Database, str):
             done = True
     return db, db_pass
 
+
+def list_dbs():
+    global buff_size
+    dbs = []
+    for (dirpath, dirnames, filenames) in os.walk(os.getcwd() + "/databases/"):
+        dbs = [file for file in filenames if file.endswith(".db")]
+    if len(dbs) < 1:
+        print("Not database found.")
+        buff_size += 1
+    else:
+        print(len(dbs), "database" + ("s " if len(dbs) > 1 else ' ') + "found :")
+        buff_size += 1 + len(dbs)
+        for db in dbs:
+            print("\t*", db[:-3])
+
 if __name__ == "__main__":
     try:
         while True:
-            db, password = handle_login()
-            if db is None:
+            action = get_input_with_choices("List databases (l), open/create database (o), quit (q): ", ['l', 'o', 'q'])
+            clear()
+            if action == 'l':
+                list_dbs()
+            elif action == 'o':
+                continue_db_ops = True
+                while continue_db_ops:
+                    db, password = handle_login()
+                    if db is None:
+                        sys.exit(0)
+                    display_db(db)
+                    continue_db_ops = perform_actions(db, password)
+            else:
                 sys.exit(0)
-            display_db(db)
-            perform_actions(db, password)
     except KeyboardInterrupt:
         print("\nReceived KeyboardInterrupt.")
         pass

@@ -71,7 +71,7 @@ def login(name: str, password: str) -> database.Database:
     return db
 
 
-def db_exists(name: str):
+def db_exists(name: str) -> bool:
     return os.path.isfile(os.getcwd() + "/databases/" + name + ".db")
 
 

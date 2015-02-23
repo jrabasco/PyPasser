@@ -37,6 +37,6 @@ class Database(storable.Storable):
     def export(self) -> dict:
         res = {
             "name": self.name,
-            "services": self.services
+            "services": [service.export() for service in self.services]
         }
         return res

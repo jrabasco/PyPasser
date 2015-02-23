@@ -248,7 +248,7 @@ def list_dbs():
     global buff_size
     dbs = []
     for (dirpath, dirnames, filenames) in os.walk(os.getcwd() + "/databases/"):
-        dbs = [file for file in filenames if file.endswith(".db")]
+        dbs = [file[:-3] for file in filenames if file.endswith(".db")]
     if len(dbs) < 1:
         print("Not database found.")
         buff_size += 1
@@ -256,7 +256,7 @@ def list_dbs():
         print(len(dbs), "database" + ("s " if len(dbs) > 1 else ' ') + "found :")
         buff_size += 1 + len(dbs)
         for db in dbs:
-            print("\t*", db[:-3])
+            print("\t*", db)
 
 if __name__ == "__main__":
     try:

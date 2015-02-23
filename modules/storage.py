@@ -5,6 +5,7 @@ from Crypto.Cipher import AES
 import os
 import hashlib
 from modules.storable import Storable
+import base64
 
 
 __BLOCK_SIZE = 32
@@ -27,9 +28,9 @@ def write(secret: str, obj: Storable, path: str="default"):
     dirs = '/'.join(path.split('/')[:-1])
     if dirs != "":
         os.makedirs(dirs, exist_ok=True)
-    with open(path, "wb+") as out_file:
+    with open(path, "w+") as out_file:
         aes = generate_aes(secret)
-        out_file.write(__encode(aes, pickle.dumps(obj)))
+        out_file.write(base64.b64encode(__encode(aes, pickle.dumps(obj))).decode("utf-8"))
 
 
 def generate_aes(secret: str) -> AES:
@@ -40,9 +41,9 @@ def generate_aes(secret: str) -> AES:
 
 
 def read(secret: str, obj: Storable, path: str):
-    with open(path, "rb") as in_file:
+    with open(path, "r") as in_file:
         aes = generate_aes(secret)
-        tmp = pickle.loads(__decode(aes, in_file.read()))
+        tmp = pickle.loads(__decode(aes, base64.b64decode(in_file.read())))
         data = {}
         for attr in dir(obj):
             data[attr] = getattr(tmp, attr)

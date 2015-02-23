@@ -33,3 +33,10 @@ class Database(storable.Storable):
     def load(self, data: dict):
         self.__name = data["name"]
         self.__services = data["services"][:]
+
+    def export(self) -> dict:
+        res = {
+            "name": self.name,
+            "services": self.services
+        }
+        return res

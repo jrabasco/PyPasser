@@ -38,3 +38,11 @@ class Service(storable.Storable):
         self.service_name = data["service_name"]
         self.username = data["username"]
         self.password = data["password"]
+
+    def export(self) -> dict:
+        res = {
+            "service_name": self.service_name,
+            "username": self.username,
+            "password": self.password
+        }
+        return res

@@ -1,11 +1,16 @@
 __author__ = 'Jeremy Rabasco'
 
-import abc
+from abc import ABCMeta, abstractmethod
 
 
-class Storable:
-    __metaclass__ = abc.ABCMeta
+class Storable(metaclass=ABCMeta):
 
-    @abc.abstractmethod
+    @abstractmethod
     def load(self, data: dict):
-        """This method should properly load the data in the dictionary"""
+        """This method should properly load the data from the dictionary"""
+        pass
+
+    @abstractmethod
+    def export(self) -> dict:
+        """This method should properly export data to a dictionary"""
+        pass

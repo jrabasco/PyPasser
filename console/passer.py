@@ -44,7 +44,7 @@ def get_service_data() -> dict:
     buff_size += 1
     service_name = get_input("Service name: ")
     username = get_input("Username: ")
-    password = get_password()
+    password = get_password("Password: ")
     return {"service_name": service_name, "username": username, "password": password}
 
 
@@ -65,19 +65,10 @@ def display_db(db: database.Database):
 def login(name: str, password: str) -> database.Database:
     if not os.path.isdir(os.getcwd() + "/databases"):
         os.mkdir(os.getcwd() + "/databases")
-    if not db_exists(name):
-        if query_yes_no("Are you willing to create database \"" + name + "\" ?"):
-            open("databases/" + name + ".db", "w+").close()
-            db = database.Database()
-            db.name = name
-            db.add_service(create_service())
-            storage.write(password, db, "databases/" + name + ".db")
-            return db
-        return None
-    else:
-        db = database.Database()
-        storage.read(password, db, "databases/" + name + ".db")
-        return db
+
+    db = database.Database()
+    storage.read(password, db, "databases/" + name + ".db")
+    return db
 
 
 def db_exists(name: str):
@@ -91,10 +82,10 @@ def create_service():
     return serv
 
 
-def get_password():
+def get_password(question: str):
     global buff_size
     buff_size += 1
-    return getpass.getpass()
+    return getpass.getpass(question)
 
 
 def get_input(msg: str):
@@ -184,12 +175,12 @@ def perform_actions(db: database.Database, password: str):
                 pword = None
 
                 if choice == 'n':
-                    name = get_input("Name: ")
+                    name = get_input("New name: ")
                 elif choice == 'p':
-                    pword = get_password()
+                    pword = get_password("New password: ")
                 elif choice == 'b':
-                    name = get_input("Name: ")
-                    pword = get_password()
+                    name = get_input("New name: ")
+                    pword = get_password("New password: ")
 
                 if name is not None or pword is not None:
                     storage.delete("databases/" + db.name + ".db")
@@ -216,27 +207,44 @@ def perform_actions(db: database.Database, password: str):
                 buff_size += 1
 
 
-def login_prompt() -> (database.Database, str):
-    global buff_size
+def open_db(db_name: str, db_pass: str) -> (database.Database, str):
     db = None
-    pass_ok = False
-    while not pass_ok:
-        try:
-            db_name = get_input("Database: ")
-            db_pass = get_password()
+    try:
+        if not db_exists(db_name):
+            if query_yes_no("Are you willing to create database \"" + db_name + "\" ?"):
+                open("databases/" + db_name + ".db", "w+").close()
+                db = database.Database()
+                db.name = db_name
+                db.add_service(create_service())
+                storage.write(db_pass, db, "databases/" + db.name + ".db")
+        else:
             db = login(db_name, db_pass)
-            pass_ok = True
-        except pickle.UnpicklingError:
-            clear()
-            print("Invalid database name/password combination, try again.")
-            buff_size += 1
-            pass_ok = False
+    except (pickle.UnpicklingError, EOFError, ValueError):
+        clear()
+    return db
+
+
+def login_prompt():
+    return get_input("Database: "), get_password("Password: ")
+
+
+def handle_login() -> (database.Database, str):
+    done = False
+    db = None
+    while not done:
+        db_name, db_pass = login_prompt()
+        db = open_db(db_name, db_pass)
+        if db is None :
+            if not query_yes_no("Could not open any database, retry with another login and password ?"):
+                done = True
+        else:
+            done = True
     return db, db_pass
 
 if __name__ == "__main__":
     try:
         while True:
-            db, password = login_prompt()
+            db, password = handle_login()
             if db is None:
                 sys.exit(0)
             display_db(db)
@@ -246,6 +254,7 @@ if __name__ == "__main__":
         pass
     finally:
         clean_dbs()
+        clear()
         try:
             del db
         except NameError:
